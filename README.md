@@ -34,9 +34,9 @@ PlacaScan é um sistema inteligente para detecção e reconhecimento de placas v
 
 - **YOLOv8 nano**: Framework para detecção de objetos em tempo real
 - **Python 3.10**: Linguagem de programação principal
-- **OpenCV 4.7.0**: Processamento de imagens e manipulação de vídeo
+//- **OpenCV 4.7.0**: Processamento de imagens e manipulação de vídeo
 - **Tesseract & EasyOCR**: Motores de reconhecimento de caracteres
-- **SQLite**: Armazenamento local de dados e resultados
+- **SQLite**: Armazenamento local de dados e resultados//
 
 ## Instalação
 
