@@ -21,7 +21,7 @@ Estamos usando o modelo YOLO V8 nano como algoritmo para reconhecimento das plac
 
 PlacaScan é um sistema inteligente para detecção e reconhecimento de placas veiculares, desenvolvido como projeto acadêmico. O sistema utiliza visão computacional avançada e técnicas de inteligência artificial para identificar placas em imagens e vídeos e extrair o texto usando OCR.
 
-![Demo do Sistema](imagens/projeto1.jpg)
+![Demo do Sistema](imagens/projeto1.jpeg)
 
 ## Características
 
@@ -40,9 +40,51 @@ PlacaScan é um sistema inteligente para detecção e reconhecimento de placas v
 
 ## Instalação
 
-```bash
-# Instruções de instalação serão adicionadas em breve
-```
+Siga estas etapas para configurar o ambiente de desenvolvimento do PlacaScan:
+
+1.  **Clone o Repositório:**
+    Abra seu terminal ou prompt de comando e clone este repositório para sua máquina local. Certifique-se de ter o [Git](https://git-scm.com/) instalado.
+
+    ```bash
+    git clone [https://github.com/SEU_USUARIO/IBMEC-SistemasEmbarcados.git](https://github.com/SEU_USUARIO/IBMEC-SistemasEmbarcados.git) # Substitua pelo URL correto do seu repositório
+    cd IBMEC-SistemasEmbarcados # Ou o nome da pasta onde o código do PlacaScan está localizado
+    ```
+
+2.  **Crie um Ambiente Virtual:**
+    É altamente recomendado usar um ambiente virtual para isolar as dependências do projeto. Navegue até a pasta do projeto clonado e crie um ambiente virtual (vamos chamá-lo de `.venv`).
+
+    ```bash
+    python -m venv .venv
+    ```
+    *Observação: Certifique-se de estar usando Python 3.10 ou compatível, conforme especificado no README.*
+
+3.  **Ative o Ambiente Virtual:**
+    * **No Windows:**
+        ```bash
+        .\.venv\Scripts\activate
+        ```
+    * **No macOS/Linux:**
+        ```bash
+        source .venv/bin/activate
+        ```
+    Após a ativação, você verá o nome do ambiente (`.venv`) no início do prompt do seu terminal.
+
+4.  **Instale as Dependências:**
+    Este projeto utiliza um arquivo `requirements.txt` para listar todas as bibliotecas Python necessárias. Certifique-se de que este arquivo (`requirements.txt`) esteja presente na raiz do projeto e contenha pelo menos as seguintes dependências (e quaisquer outras que você adicionar):
+
+    * `ultralytics` (para YOLOv8)
+    * `opencv-python` (para OpenCV)
+    * *Outras dependências como `easyocr` ou `pytesseract` se você habilitar o OCR*
+
+    Execute o seguinte comando para instalar todas as dependências listadas no arquivo:
+
+    ```bash
+    pip install -r requirements.txt
+    ```
+
+5.  **(Opcional/Futuro) Instale Dependências Externas:**
+    Algumas funcionalidades, como o OCR com Tesseract (se você decidir usá-lo em vez de ou junto com EasyOCR), podem exigir a instalação de software adicional no seu sistema operacional (fora do ambiente Python).
+    * *Por exemplo, para Tesseract: Siga as instruções de instalação específicas para o seu sistema operacional (Linux, macOS, Windows).*
 
 ## Uso
 
