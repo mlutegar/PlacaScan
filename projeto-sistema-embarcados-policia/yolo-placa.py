@@ -1,30 +1,51 @@
+import os
+import cv2
+import pytesseract
 from ultralytics import YOLO
 
-# Carrega o modelo
+pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
+
+# Pasta de saída
+save_dir = 'placas_crops'
+os.makedirs(save_dir, exist_ok=True)
+
+# Carrega modelo
 model = YOLO('placa-veicular-model.pt')
 
-# Define onde salvar:
-#   project = pasta raiz (ex: "results")
-#   name    = subpasta específica (ex: "plates")
-# Com save=True e save_crop=True, o YOLO vai:
-#  - salvar as imagens completas com bounding‑boxes em results/plates
-#  - salvar cada crop de placa em results/plates/crops
-model(source=0,
-      conf=0.4,
-      show=True,
-      save=True,
-      save_crop=True,
-      project='results',
-      name='plates')
+cap = cv2.VideoCapture(0)
+counter = 0
 
-# Se quiser também no stream IP:
-windows_ip = "172.20.10.5"
-stream_url = f"http://{windows_ip}:8080/video"
+while True:
+    ret, frame = cap.read()
+    if not ret:
+        break
 
-model(source=stream_url,
-      conf=0.4,
-      show=True,
-      save=True,
-      save_crop=True,
-      project='results',
-      name='plates')
+    results = model(frame, conf=0.4)[0]
+
+    for box in results.boxes:
+        x1, y1, x2, y2 = box.xyxy[0].cpu().numpy().astype(int)
+        crop = frame[y1:y2, x1:x2]
+
+        # --- OCR ---
+        # Configurações: PSM 7 (uma linha), whitelist só A–Z e 0–9
+        config = '--oem 3 --psm 7 -c tessedit_char_whitelist=ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
+        text = pytesseract.image_to_string(crop, config=config).strip()
+        print(f"[{counter:04d}] Placa reconhecida:", text)
+
+        # Salva imagem e TXT
+        img_path  = os.path.join(save_dir, f'placa_{counter:04d}.jpg')
+        txt_path  = os.path.join(save_dir, f'placa_{counter:04d}.txt')
+        cv2.imwrite(img_path, crop)
+        with open(txt_path, 'w', encoding='utf-8') as f:
+            f.write(text)
+
+        counter += 1
+        # desenha retângulo pra debug
+        cv2.rectangle(frame, (x1,y1), (x2,y2), (0,255,0), 2)
+
+    cv2.imshow('Detecção + OCR', frame)
+    if cv2.waitKey(1) == 27:  # ESC
+        break
+
+cap.release()
+cv2.destroyAllWindows()
