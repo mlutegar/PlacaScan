@@ -21,7 +21,7 @@ Estamos usando o modelo YOLO V8 nano como algoritmo para reconhecimento das plac
 
 PlacaScan é um sistema inteligente para detecção e reconhecimento de placas veiculares, desenvolvido como projeto acadêmico. O sistema utiliza visão computacional avançada e técnicas de inteligência artificial para identificar placas em imagens e vídeos e extrair o texto usando OCR.
 
-![Demo do Sistema](imagens/projeto1.jpg)
+![Demo do Sistema](imagens/projeto1.jpeg)
 
 ## Características
 
