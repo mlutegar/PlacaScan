@@ -91,18 +91,80 @@ Como este projeto utiliza o pytesseract, é necessário instalar o Tesseract OCR
 * Adicione o caminho do Tesseract à variável de ambiente PATH do sistema ou especifique o caminho diretamente no código
 * Verifique a instalação executando `tesseract --version` no prompt de comando
 
-## Uso
-
-### Detector básico
-
-```python
-# Exemplos de uso do detector básico serão adicionados em breve
-```
+## Uso do PlacaScan
 
 ### Pipeline completa
 
+Para utilizar a pipeline completa com reconhecimento de texto:
+
+1. Certifique-se de que o Tesseract OCR está instalado corretamente em seu sistema
+2. Configure sua webcam e conecte ao computador
+3. Execute o arquivo **pipeline-completa.py**:
+   ```bash
+   python pipeline-completa.py
+   ```
+4. Aponte a câmera para placas de veículos
+5. O sistema irá:
+   - Detectar as placas em tempo real
+   - Reconhecer o texto das placas usando OCR
+   - Salvar imagens das placas na pasta **placas_crops**
+   - Gerar arquivos TXT com o texto reconhecido para cada placa
+6. O texto reconhecido será exibido no terminal em tempo real
+7. Pressione ESC para encerrar o programa
+
 ```python
-# Exemplos de uso da pipeline completa serão adicionados em breve
+import os
+import cv2
+import pytesseract
+from ultralytics import YOLO
+
+# Configuração do caminho para o executável do Tesseract (necessário no Windows)
+pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
+
+# Pasta de saída
+save_dir = 'placas_crops'
+os.makedirs(save_dir, exist_ok=True)
+
+# Carrega modelo
+model = YOLO('placa-veicular-model.pt')
+
+cap = cv2.VideoCapture(0)
+counter = 0
+
+while True:
+    ret, frame = cap.read()
+    if not ret:
+        break
+
+    results = model(frame, conf=0.4)[0]
+
+    for box in results.boxes:
+        x1, y1, x2, y2 = box.xyxy[0].cpu().numpy().astype(int)
+        crop = frame[y1:y2, x1:x2]
+
+        # --- OCR ---
+        # Configurações: PSM 7 (uma linha), whitelist só A–Z e 0–9
+        config = '--oem 3 --psm 7 -c tessedit_char_whitelist=ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
+        text = pytesseract.image_to_string(crop, config=config).strip()
+        print(f"[{counter:04d}] Placa reconhecida:", text)
+
+        # Salva imagem e TXT
+        img_path  = os.path.join(save_dir, f'placa_{counter:04d}.jpg')
+        txt_path  = os.path.join(save_dir, f'placa_{counter:04d}.txt')
+        cv2.imwrite(img_path, crop)
+        with open(txt_path, 'w', encoding='utf-8') as f:
+            f.write(text)
+
+        counter += 1
+        # desenha retângulo pra debug
+        cv2.rectangle(frame, (x1,y1), (x2,y2), (0,255,0), 2)
+
+    cv2.imshow('Detecção + OCR', frame)
+    if cv2.waitKey(1) == 27:  # ESC
+        break
+
+cap.release()
+cv2.destroyAllWindows()
 ```
 
 ## Desempenho
@@ -122,17 +184,24 @@ _Métricas de desempenho serão adicionadas em breve_
 
 ## Estrutura do Projeto
 
-_A estrutura detalhada do projeto será adicionada em breve_
+A estrutura do projeto PlacaScan é organizada da seguinte forma:
+
+projeto-sistema-embarcados-policial/
+├── .idea/                     # Pasta de configuração do IDE
+├── runs/detect/               # Pasta contendo resultados das detecções
+├── .gitignore                 # Arquivo de configuração Git (arquivos ignorados)
+├── COMMANDS.md                # Documentação dos comandos do projeto
+├── placa-veicular-model.pt    # Modelo YOLOv8 treinado para detectar placas veiculares
+├── requirements.txt           # Lista de dependências Python do projeto
+└── yolo-placa.py              # Script principal de detecção de placas veiculares
+
+A pasta runs/detect armazena os resultados das detecções realizadas pelo sistema. O arquivo placa-veicular-model.pt contém o modelo YOLOv8 treinado especificamente para detectar placas veiculares brasileiras. O script principal yolo-placa.py implementa a lógica de detecção e reconhecimento de placas usando a webcam.
 
 ## Trabalhos Futuros
 
 - Expandir o dataset com mais placas brasileiras
 - Implementar detecção de adulterações em placas
 - Otimizar para dispositivos móveis
-
-## Contribuições
-
-_Instruções para contribuições serão adicionadas em breve_
 
 ## Licença
 
@@ -141,6 +210,6 @@ Este projeto está licenciado sob a Licença MIT - veja o arquivo [LICENSE](LICE
 ## Agradecimentos
 
 - Professor Rigel pelo suporte e orientação
-- Professores e colegas do curso
+- Colegas do curso
 - Comunidade YOLOv8 pelos excelentes recursos
-<!-- - Contribuidores dos projetos OpenCV, Tesseract e EasyOCR -->
+- Contribuidores dos projetos Tesseract
