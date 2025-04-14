@@ -46,7 +46,7 @@ Siga estas etapas para configurar o ambiente de desenvolvimento do PlacaScan:
 Abra seu terminal ou prompt de comando e clone este repositório para sua máquina local. Certifique-se de ter o [Git](https://git-scm.com/) instalado.
 
 ```bash
-git clone [https://github.com/SEU_USUARIO/IBMEC-SistemasEmbarcados.git](https://github.com/SEU_USUARIO/IBMEC-SistemasEmbarcados.git) # Substitua pelo URL correto do seu repositório
+git clone https://github.com/andreccoelho/IBMEC-SistemasEmbarcados/
 cd IBMEC-SistemasEmbarcados # Ou o nome da pasta onde o código do PlacaScan está localizado
 ```
 
