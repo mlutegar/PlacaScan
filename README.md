@@ -38,53 +38,58 @@ PlacaScan é um sistema inteligente para detecção e reconhecimento de placas v
 - **Tesseract & EasyOCR**: Motores de reconhecimento de caracteres
 - **SQLite**: Armazenamento local de dados e resultados// -->
 
-## Instalação
+## Instalação do PlacaScan
 
 Siga estas etapas para configurar o ambiente de desenvolvimento do PlacaScan:
 
-1.  **Clone o Repositório:**
-    Abra seu terminal ou prompt de comando e clone este repositório para sua máquina local. Certifique-se de ter o [Git](https://git-scm.com/) instalado.
+### 1. Clone o Repositório
+Abra seu terminal ou prompt de comando e clone este repositório para sua máquina local. Certifique-se de ter o [Git](https://git-scm.com/) instalado.
 
+```bash
+git clone [https://github.com/SEU_USUARIO/IBMEC-SistemasEmbarcados.git](https://github.com/SEU_USUARIO/IBMEC-SistemasEmbarcados.git) # Substitua pelo URL correto do seu repositório
+cd IBMEC-SistemasEmbarcados # Ou o nome da pasta onde o código do PlacaScan está localizado
+```
+
+### 2. Crie um Ambiente Virtual
+É altamente recomendado usar um ambiente virtual para isolar as dependências do projeto. Navegue até a pasta do projeto clonado e crie um ambiente virtual (vamos chamá-lo de `.venv`).
+
+```bash
+python -m venv .venv
+```
+*Observação: Certifique-se de estar usando Python 3.10 ou compatível, conforme especificado no README.*
+
+### 3. Ative o Ambiente Virtual
+* **No Windows:**
     ```bash
-    git clone [https://github.com/SEU_USUARIO/IBMEC-SistemasEmbarcados.git](https://github.com/SEU_USUARIO/IBMEC-SistemasEmbarcados.git) # Substitua pelo URL correto do seu repositório
-    cd IBMEC-SistemasEmbarcados # Ou o nome da pasta onde o código do PlacaScan está localizado
+    .\.venv\Scripts\activate
     ```
-
-2.  **Crie um Ambiente Virtual:**
-    É altamente recomendado usar um ambiente virtual para isolar as dependências do projeto. Navegue até a pasta do projeto clonado e crie um ambiente virtual (vamos chamá-lo de `.venv`).
-
+* **No macOS/Linux:**
     ```bash
-    python -m venv .venv
+    source .venv/bin/activate
     ```
-    *Observação: Certifique-se de estar usando Python 3.10 ou compatível, conforme especificado no README.*
+Após a ativação, você verá o nome do ambiente (`.venv`) no início do prompt do seu terminal.
 
-3.  **Ative o Ambiente Virtual:**
-    * **No Windows:**
-        ```bash
-        .\.venv\Scripts\activate
-        ```
-    * **No macOS/Linux:**
-        ```bash
-        source .venv/bin/activate
-        ```
-    Após a ativação, você verá o nome do ambiente (`.venv`) no início do prompt do seu terminal.
+### 4. Instale as Dependências
+Este projeto utiliza um arquivo `requirements.txt` para listar todas as bibliotecas Python necessárias. Certifique-se de que este arquivo (`requirements.txt`) esteja presente na raiz do projeto e contenha pelo menos as seguintes dependências (e quaisquer outras que você adicionar):
 
-4.  **Instale as Dependências:**
-    Este projeto utiliza um arquivo `requirements.txt` para listar todas as bibliotecas Python necessárias. Certifique-se de que este arquivo (`requirements.txt`) esteja presente na raiz do projeto e contenha pelo menos as seguintes dependências (e quaisquer outras que você adicionar):
+* `ultralytics` (para YOLOv8)
+* `opencv-python` (para OpenCV)
+* `pytesseract` (para OCR)
+* *Outras dependências como `easyocr` se você quiser usar outros métodos de OCR*
 
-    * `ultralytics` (para YOLOv8)
-    * `opencv-python` (para OpenCV)
-    * *Outras dependências como `easyocr` ou `pytesseract` se você habilitar o OCR*
+Execute o seguinte comando para instalar todas as dependências listadas no arquivo:
 
-    Execute o seguinte comando para instalar todas as dependências listadas no arquivo:
+```bash
+pip install -r requirements.txt
+```
 
-    ```bash
-    pip install -r requirements.txt
-    ```
+### 5. Instale o Tesseract OCR no Windows
+Como este projeto utiliza o pytesseract, é necessário instalar o Tesseract OCR no seu sistema:
 
-5.  **(Opcional/Futuro) Instale Dependências Externas:**
-    Algumas funcionalidades, como o OCR com Tesseract (se você decidir usá-lo em vez de ou junto com EasyOCR), podem exigir a instalação de software adicional no seu sistema operacional (fora do ambiente Python).
-    * *Por exemplo, para Tesseract: Siga as instruções de instalação específicas para o seu sistema operacional (Linux, macOS, Windows).*
+* Baixe o instalador do Tesseract para Windows do site oficial: https://github.com/UB-Mannheim/tesseract/wiki
+* Execute o instalador e siga as instruções (recomenda-se manter o caminho de instalação padrão: `C:\Program Files\Tesseract-OCR`)
+* Adicione o caminho do Tesseract à variável de ambiente PATH do sistema ou especifique o caminho diretamente no código
+* Verifique a instalação executando `tesseract --version` no prompt de comando
 
 ## Uso
 
