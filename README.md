@@ -1,8 +1,6 @@
-# IBMEC-SistemasEmbarcados
+# PlacaScan: Sistema de Reconhecimento de Placas Veiculares
 
 Esse repositório é destinado ao desenvolvimento de um produto baseado nos conhecimentos adquiridos na matéria Sistemas Embarcados.
-
-# PlacaScan: Sistema de Reconhecimento de Placas Veiculares
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python Version](https://img.shields.io/badge/python-3.10-blue.svg)](https://www.python.org/downloads/release/python-3100/)
