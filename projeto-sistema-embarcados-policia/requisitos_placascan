@@ -1,0 +1,17 @@
+// Requisitos PlacaScan
+digraph {
+	A [label="Captura de Vídeo
+(Webcam)"]
+	B [label="Detecção de Placa
+(YOLOv8 nano)"]
+	C [label="Reconhecimento
+(OCR - Tesseract)"]
+	D [label="Consulta
+(Banco de Dados)"]
+	E [label="Alerta
+(Irregularidades)"]
+	A -> B
+	B -> C
+	C -> D
+	D -> E
+}
