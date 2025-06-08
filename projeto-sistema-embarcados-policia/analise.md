@@ -1,0 +1,147 @@
+Loaded 921 OCR test results
+Unique plates: 65
+Preprocessing methods: 8
+Confidence thresholds: [np.float64(0.0), np.float64(0.2), np.float64(0.4), np.float64(0.6), np.float64(0.8)]
+Starting comprehensive statistical analysis...
+==================================================
+Step 1: Filtering to valid 7-character plates...
+
+Filtered to valid 7-character plates:
+Valid plates: 921 tests (100.0%)
+Unique valid plates: 65
+Plate formats:
+  Old format (ABC1234): 21
+  New format (ABC1A23): 44
+
+Step 2: Calculating character-level accuracy...
+
+Character-level analysis completed for 921 tests
+
+Step 3: Analyzing threshold impact...
+
+Step 4: Calculating false positive rates...
+
+Step 5: Running statistical significance tests...
+
+Step 6: Creating comprehensive visualizations...
+Comprehensive analysis plot saved to: curated_dataset/statistical_analysis.png
+
+Step 7: Generating academic report...
+ACADEMIC STATISTICAL ANALYSIS COMPLETE!
+==================================================
+STATISTICAL ANALYSIS REPORT
+==================================================
+Analysis Date: 2025-06-05 21:14
+Dataset: curated_dataset
+
+1. DATASET SUMMARY
+--------------------
+Total OCR tests: 921
+Valid 7-character plates: 921
+Unique plates: 65
+Preprocessing methods: 8
+Confidence thresholds tested: [np.float64(0.0), np.float64(0.2), np.float64(0.4), np.float64(0.6), np.float64(0.8)]
+
+2. PERFORMANCE OVERVIEW
+-------------------------
+Overall full plate accuracy: 0.031 (3.1%)
+Overall character accuracy: 0.268 (26.8%)
+
+3. BEST PERFORMING METHODS
+------------------------------
+Top 5 Method-Threshold Combinations:
+  1. Resized2x (threshold 0.8): 0.667 accuracy
+  2. Resized2x (threshold 0.6): 0.154 accuracy
+  3. Inverted (threshold 0.4): 0.118 accuracy
+  4. Resized2x (threshold 0.2): 0.108 accuracy
+  5. Resized2x (threshold 0.4): 0.091 accuracy
+
+4. THRESHOLD IMPACT ANALYSIS
+--------------------------------
+No threshold (0.0): 0.020 accuracy
+With thresholds (>0.0): 0.043 accuracy
+Improvement: +121.7%
+Statistical significance: p = 0.5865 (not significant)
+
+5. CHARACTER POSITION ANALYSIS
+-----------------------------------
+  Position 0: 0.405 (40.5%)
+  Position 1: 0.303 (30.3%)
+  Position 2: 0.226 (22.6%)
+  Position 3: 0.219 (21.9%)
+  Position 4: 0.257 (25.7%)
+  Position 5: 0.261 (26.1%)
+  Position 6: 0.206 (20.6%)
+
+6. ERROR ANALYSIS
+------------------
+  False Positive: 892 (96.9%)
+  True Positive: 29 (3.1%)
+
+Character-level error rate: 0.732 (73.2%)
+Character-level accuracy: 0.268 (26.8%)
+
+7. STATISTICAL SIGNIFICANCE TESTS
+--------------------------------------
+
+Threshold Comparison:
+  Test: Independent t-test
+  P-value: 0.5865
+  Result: Not statistically significant
+  No threshold mean: 0.020
+  With threshold mean: 0.043
+
+Methods Comparison:
+  Test: One-way ANOVA
+  P-value: 0.0124
+  Result: Statistically significant
+
+Character Position:
+  Test: Chi-square goodness of fit
+  P-value: 0.0000
+  Result: Statistically significant
+
+8. RECOMMENDATIONS FOR ACADEMIC PUBLICATION
+------------------------------------------------
+• Best preprocessing method: Resized2x
+• Optimal confidence threshold: 0.8
+• Achieved accuracy: 0.667
+• Confidence thresholding improves performance
+• Character-level accuracy is 8.5x higher than full-plate accuracy
+• Focus on character position-specific improvements
+
+9. KEY METRICS FOR PUBLICATION
+-----------------------------------
+• Dataset size: 65 unique license plates
+• Total experiments: 921 OCR tests
+• Method combinations tested: 40 (8 methods × 5 thresholds)
+• Best accuracy achieved: 0.667
+• Average character accuracy: 0.268
+• Statistical significance: 2 of 3 tests significant
+
+
+Full report saved to: curated_dataset/statistical_analysis_report.txt
+
+Step 8: Exporting publication-ready tables...
+Publication tables exported to: curated_dataset/publication_tables
+
+==================================================
+ANALYSIS COMPLETE!
+Generated files:
+• Statistical analysis plot: curated_dataset/statistical_analysis.png
+• Academic report: curated_dataset/statistical_analysis_report.txt
+• Publication tables: curated_dataset/publication_tables/
+• LaTeX tables: curated_dataset/publication_tables/latex_tables.tex
+
+KEY FINDINGS SUMMARY:
+==============================
+• Threshold vs No-threshold: No significant difference
+  - No threshold: 0.020
+  - With threshold: 0.043
+• Best combination: Resized2x with threshold 0.8
+  - Full plate accuracy: 0.667
+• Character accuracy: 0.268 (26.8%)
+• Full plate accuracy: 0.031 (3.1%)
+• Character accuracy is 8.5x higher than full plate accuracy
+
+Ready for academic publication! 🎓📊

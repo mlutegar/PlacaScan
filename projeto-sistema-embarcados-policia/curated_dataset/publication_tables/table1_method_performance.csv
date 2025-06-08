@@ -1,0 +1,9 @@
+preprocessing_method,Accuracy_Mean,Accuracy_Std,Accuracy_Max,Char_Accuracy,Detection_Rate,Tests
+Adaptive,0.0,0.0,0.0,0.0444,1.0,61
+Bilateral,0.0211,0.0326,0.0741,0.179,1.0,64
+Grayscale,0.0195,0.023,0.0556,0.2419,1.0,65
+Inverted,0.0432,0.0499,0.1176,0.257,1.0,63
+Original,0.0092,0.0136,0.0303,0.4226,1.0,63
+Otsu,0.0,0.0,0.0,0.1549,1.0,45
+Resized2x,0.2164,0.2539,0.6667,0.5815,1.0,64
+Sharpened,0.0,0.0,0.0,0.1891,1.0,59
