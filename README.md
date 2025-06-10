@@ -1,211 +1,249 @@
-# PlacaScan: Sistema de Reconhecimento de Placas Veiculares
+# LPR Analysis Tools: Otimização de Pré-processamento para OCR
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python Version](https://img.shields.io/badge/python-3.10-blue.svg)](https://www.python.org/downloads/release/python-3100/)
 [![YOLOv8](https://img.shields.io/badge/YOLOv8-2023-green.svg)](https://github.com/ultralytics/ultralytics)
 [![OpenCV](https://img.shields.io/badge/OpenCV-4.7.0-red.svg)](https://opencv.org/)
 
-## Projeto Aplicado
-
-Este projeto consiste no desenvolvimento de um sistema embarcado para uso pelas forças policiais do Rio de Janeiro. O sistema integra um leitor automático de placas de veículos em tempo real, permitindo a verificação instantânea da situação veicular. Ele identifica possíveis irregularidades, incluindo restrições administrativas, mandados de busca e apreensão, e registros de furto ou roubo. Com essa tecnologia, a fiscalização torna-se mais eficiente, contribuindo para a segurança pública e a agilidade no combate a crimes relacionados a veículos.
-
-## Implementação
-
-Estamos usando o modelo YOLO V8 nano como algoritmo para reconhecimento das placas.
-
 ## Visão Geral
 
-PlacaScan é um sistema inteligente para detecção e reconhecimento de placas veiculares, desenvolvido como projeto acadêmico. O sistema utiliza visão computacional avançada e técnicas de inteligência artificial para identificar placas em imagens e vídeos e extrair o texto usando OCR.
+Este repositório contém ferramentas de análise e validação para sistemas de reconhecimento de placas veiculares (LPR), com foco específico na **otimização de técnicas de pré-processamento de imagem** para maximizar a precisão de OCR em hardware embarcado com recursos limitados.
 
-![Demo do Sistema](imagens/projeto1.jpeg)
+O projeto investiga sistematicamente o impacto de diferentes algoritmos de pré-processamento na precisão do reconhecimento óptico de caracteres (OCR) para placas brasileiras, estabelecendo um trade-off crítico entre precisão e eficiência computacional.
 
-## Características
+## Problema de Pesquisa
 
-- **Detecção em tempo real** de placas veiculares em streams de vídeo
-- **Reconhecimento óptico de caracteres (OCR)** para extração do texto da placa
-- **Interface intuitiva** para visualização dos resultados
-- Suporte para diferentes formatos de placas (com foco em padrões brasileiros)
+**Como alcançar a máxima precisão de OCR para placas brasileiras usando algoritmos de pré-processamento leves e rápidos o suficiente para hardware embarcado com recursos restritos?**
 
-## Tecnologias
+## Arquitetura do Sistema
 
-- **YOLOv8 nano**: Framework para detecção de objetos em tempo real
-- **Python 3.10**: Linguagem de programação principal
-<!-- - **OpenCV 4.7.0**: Processamento de imagens e manipulação de vídeo
-- **Tesseract & EasyOCR**: Motores de reconhecimento de caracteres
-- **SQLite**: Armazenamento local de dados e resultados// -->
-
-## Instalação do PlacaScan
-
-Siga estas etapas para configurar o ambiente de desenvolvimento do PlacaScan:
-
-### 1. Clone o Repositório
-Abra seu terminal ou prompt de comando e clone este repositório para sua máquina local. Certifique-se de ter o [Git](https://git-scm.com/) instalado.
-
-```bash
-git clone https://github.com/andreccoelho/IBMEC-SistemasEmbarcados/
-cd IBMEC-SistemasEmbarcados # Ou o nome da pasta onde o código do PlacaScan está localizado
+```
+Imagem Capturada → YOLO Detection → Pré-processamento → OCR (Tesseract) → Pós-processamento → Resultado Final
+                      ↓                    ↓                 ↓                    ↓
+                 Bounding Box      Filtros Otimizados    Extração de Texto    Validação
 ```
 
-### 2. Crie um Ambiente Virtual
-É altamente recomendado usar um ambiente virtual para isolar as dependências do projeto. Navegue até a pasta do projeto clonado e crie um ambiente virtual (vamos chamá-lo de `.venv`).
+## Técnicas de Pré-processamento Investigadas
 
+Este projeto avalia **8 técnicas** selecionadas por sua simplicidade computacional e eficácia potencial:
+
+| Técnica | Descrição | Custo Computacional | Aplicação |
+|---------|-----------|-------------------|-----------|
+| **Original** | Imagem sem processamento | Mínimo | Baseline |
+| **Grayscale** | Conversão para escala de cinza | Muito baixo | Redução de dimensionalidade |
+| **Otsu** | Limiarização automática de Otsu | Baixo | Binarização adaptativa |
+| **Adaptive** | Limiarização adaptativa | Baixo | Condições de iluminação variável |
+| **Bilateral** | Filtragem bilateral | Médio | Redução de ruído preservando bordas |
+| **Sharpened** | Aumento de nitidez | Baixo | Melhoria de definição |
+| **Resized2x** | Redimensionamento 2x | Alto | Aumento de resolução |
+| **Inverted** | Inversão de cores | Muito baixo | Melhoria de contraste |
+
+## Ferramentas Incluídas
+
+### 1. Video Analysis Tool (`video_analysis.py`)
+- Processa vídeos aplicando todas as técnicas de pré-processamento
+- Executa OCR em múltiplos limiares de confiança (0.0, 0.2, 0.4, 0.6, 0.8)
+- Gera análise batch completa com 921 tentativas de OCR
+
+### 2. Validation Tool (`analysis-tool.py`)
+Interface gráfica para validação manual dos resultados:
+- Visualização lado a lado: imagem original vs. melhor processada
+- Input para ground truth (texto correto da placa)
+- Avaliação de qualidade (Excellent/Good/Poor/Unreadable)
+- Navegação por teclado (←/→/Enter/Space)
+- Filtragem: All/Deduplicated/High Quality Only
+- Exportação para análise estatística
+
+**Funcionalidades principais:**
+```python
+# Filtros de deduplicação
+def deduplicate_plates(self):
+    time_window = 5.0  # segundos
+    similarity_threshold = 0.8
+
+# Filtro de alta qualidade
+def filter_high_quality_plates(self):
+    confidence_threshold = 0.7
+    min_bbox_area = 2000  # pixels
+```
+
+### 3. Dataset Curator (`dataset-curator.py`)
+Curador automático para criação de datasets validados:
+- Filtragem por critérios de qualidade
+- Limitação de placas por vídeo
+- Cópia automática de arquivos (original + 8 versões processadas)
+- Geração de metadados e estatísticas
+- Exportação para CSV para análise acadêmica
+
+## Resultados Principais
+
+### Performance Geral
+- **Dataset:** 65 placas brasileiras, 921 tentativas de OCR
+- **Precisão placa completa:** 3.1%
+- **Precisão por caractere:** 26.8%
+
+### Melhores Métodos
+
+| Método | Precisão Média | Melhor Configuração | Trade-off |
+|--------|---------------|-------------------|-----------|
+| **Resized2x** | 21.6% | 66.7% (limiar 0.8) | Alta precisão, alto custo (4x memória) |
+| **Inverted** | 11.8% | 11.8% (limiar 0.4) | Precisão competitiva, custo quase nulo |
+
+### Estratégias Identificadas
+
+1. **Estratégia de Máxima Precisão:**
+   - Método: Resized2x (limiar 0.8)
+   - Precisão: 66.7%
+   - Limitação: Alto custo computacional
+
+2. **Estratégia Otimizada para Embarcados:**
+   - Método: Inverted (limiar 0.4)
+   - Precisão: 11.8%
+   - Vantagem: Sobrecarga computacional praticamente nula
+
+## Instalação
+
+### Pré-requisitos
+- Python 3.10+
+- Tesseract OCR
+- YOLO v8 nano model
+
+### Setup
 ```bash
+git clone [repository-url]
+cd lpr-analysis-tools
 python -m venv .venv
-```
-*Observação: Certifique-se de estar usando Python 3.10 ou compatível, conforme especificado no README.*
+source .venv/bin/activate  # Linux/Mac
+# ou
+.\.venv\Scripts\activate  # Windows
 
-### 3. Ative o Ambiente Virtual
-* **No Windows:**
-    ```bash
-    .\.venv\Scripts\activate
-    ```
-* **No macOS/Linux:**
-    ```bash
-    source .venv/bin/activate
-    ```
-Após a ativação, você verá o nome do ambiente (`.venv`) no início do prompt do seu terminal.
-
-### 4. Instale as Dependências
-Este projeto utiliza um arquivo `requirements.txt` para listar todas as bibliotecas Python necessárias. Certifique-se de que este arquivo (`requirements.txt`) esteja presente na raiz do projeto e contenha pelo menos as seguintes dependências (e quaisquer outras que você adicionar):
-
-* `ultralytics` (para YOLOv8)
-* `opencv-python` (para OpenCV)
-* `pytesseract` (para OCR)
-* *Outras dependências como `easyocr` se você quiser usar outros métodos de OCR*
-
-Execute o seguinte comando para instalar todas as dependências listadas no arquivo:
-
-```bash
 pip install -r requirements.txt
 ```
 
-### 5. Instale o Tesseract OCR no Windows
-Como este projeto utiliza o pytesseract, é necessário instalar o Tesseract OCR no seu sistema:
-
-* Baixe o instalador do Tesseract para Windows do site oficial: https://github.com/UB-Mannheim/tesseract/wiki
-* Execute o instalador e siga as instruções (recomenda-se manter o caminho de instalação padrão: `C:\Program Files\Tesseract-OCR`)
-* Adicione o caminho do Tesseract à variável de ambiente PATH do sistema ou especifique o caminho diretamente no código
-* Verifique a instalação executando `tesseract --version` no prompt de comando
-
-## Uso do PlacaScan
-
-### Pipeline completa
-
-Para utilizar a pipeline completa com reconhecimento de texto:
-
-1. Certifique-se de que o Tesseract OCR está instalado corretamente em seu sistema
-2. Configure sua webcam e conecte ao computador
-3. Execute o arquivo **pipeline-completa.py**:
-   ```bash
-   python pipeline-completa.py
-   ```
-4. Aponte a câmera para placas de veículos
-5. O sistema irá:
-   - Detectar as placas em tempo real
-   - Reconhecer o texto das placas usando OCR
-   - Salvar imagens das placas na pasta **placas_crops**
-   - Gerar arquivos TXT com o texto reconhecido para cada placa
-6. O texto reconhecido será exibido no terminal em tempo real
-7. Pressione ESC para encerrar o programa
-
-```python
-import os
-import cv2
-import pytesseract
-from ultralytics import YOLO
-
-# Configuração do caminho para o executável do Tesseract (necessário no Windows)
+### Configuração do Tesseract (Windows)
+```bash
+# Baixar de: https://github.com/UB-Mannheim/tesseract/wiki
+# Instalar em: C:\Program Files\Tesseract-OCR\
+# Configurar no código:
 pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
-
-# Pasta de saída
-save_dir = 'placas_crops'
-os.makedirs(save_dir, exist_ok=True)
-
-# Carrega modelo
-model = YOLO('placa-veicular-model.pt')
-
-cap = cv2.VideoCapture(0)
-counter = 0
-
-while True:
-    ret, frame = cap.read()
-    if not ret:
-        break
-
-    results = model(frame, conf=0.4)[0]
-
-    for box in results.boxes:
-        x1, y1, x2, y2 = box.xyxy[0].cpu().numpy().astype(int)
-        crop = frame[y1:y2, x1:x2]
-
-        # --- OCR ---
-        # Configurações: PSM 7 (uma linha), whitelist só A–Z e 0–9
-        config = '--oem 3 --psm 7 -c tessedit_char_whitelist=ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
-        text = pytesseract.image_to_string(crop, config=config).strip()
-        print(f"[{counter:04d}] Placa reconhecida:", text)
-
-        # Salva imagem e TXT
-        img_path  = os.path.join(save_dir, f'placa_{counter:04d}.jpg')
-        txt_path  = os.path.join(save_dir, f'placa_{counter:04d}.txt')
-        cv2.imwrite(img_path, crop)
-        with open(txt_path, 'w', encoding='utf-8') as f:
-            f.write(text)
-
-        counter += 1
-        # desenha retângulo pra debug
-        cv2.rectangle(frame, (x1,y1), (x2,y2), (0,255,0), 2)
-
-    cv2.imshow('Detecção + OCR', frame)
-    if cv2.waitKey(1) == 27:  # ESC
-        break
-
-cap.release()
-cv2.destroyAllWindows()
 ```
 
-## Desempenho
+## Uso das Ferramentas
 
-_Métricas de desempenho serão adicionadas em breve_
+### 1. Análise de Vídeo
+```bash
+python video_analysis.py
+# Processa vídeos da pasta 'videos/'
+# Gera resultados em 'video_analysis_results/'
+```
 
-## Cronograma de Desenvolvimento
+### 2. Validação Manual
+```bash
+python analysis-tool.py
+# Interface gráfica para validação
+# Carrega dados de 'video_analysis_results/'
+# Salva validações em 'validation_results.json'
+```
 
-| Data | Atividade | Descrição |
-|------|-----------|-----------|
-| 18/02/2025 | Aula inaugural | Introdução à disciplina e discussão de possibilidades de projetos |
-| 25/02/2025 | Definição do projeto | Seleção do tema e estabelecimento do objetivo de submissão ao SBRT |
-| 04/03/2025 | Implementação inicial | Desenvolvimento da estrutura base utilizando YOLOv8 |
-| 07/03/2025 | Desenvolvimento BD e treinamento | Configuração do armazenamento e treinamento do modelo (3 dias) |
-| 11/03/2025 | Testes em tempo real | Avaliação de desempenho do sistema com webcam |
-| 18/03/2025 | Integração OCR | Implementação do pipeline completo de reconhecimento |
+### 3. Curadoria de Dataset
+```bash
+python dataset-curator.py
+# Cria dataset curado em 'curated_dataset/'
+# Filtra por qualidade e remove duplicatas
+# Gera CSVs para análise estatística
+```
 
-## Estrutura do Projeto
+## Estrutura de Dados
 
-A estrutura do projeto PlacaScan é organizada da seguinte forma:
+### Formato de Resultados OCR
+```json
+{
+  "filename": "plate_001",
+  "video_name": "video1.mp4",
+  "confidence": 0.87,
+  "ocr_results": {
+    "grayscale": {
+      "0.0": {"text": "ABC1234", "confidence": 0.92},
+      "0.4": {"text": "ABC1234", "confidence": 0.89}
+    },
+    "resized2x": {
+      "0.8": {"text": "ABC1234", "confidence": 0.95}
+    }
+  }
+}
+```
 
-projeto-sistema-embarcados-policial/
-├── .idea/                     # Pasta de configuração do IDE
-├── runs/detect/               # Pasta contendo resultados das detecções
-├── .gitignore                 # Arquivo de configuração Git (arquivos ignorados)
-├── COMMANDS.md                # Documentação dos comandos do projeto
-├── placa-veicular-model.pt    # Modelo YOLOv8 treinado para detectar placas veiculares
-├── requirements.txt           # Lista de dependências Python do projeto
-└── yolo-placa.py              # Script principal de detecção de placas veiculares
+### Formato de Validação
+```json
+{
+  "filename": "plate_001",
+  "ground_truth": "ABC1234",
+  "quality": "Good",
+  "ocr_accuracies": {
+    "resized2x": {
+      "0.8": {
+        "ocr_text": "ABC1234",
+        "confidence": 0.95,
+        "is_correct": true
+      }
+    }
+  }
+}
+```
 
-A pasta runs/detect armazena os resultados das detecções realizadas pelo sistema. O arquivo placa-veicular-model.pt contém o modelo YOLOv8 treinado especificamente para detectar placas veiculares brasileiras. O script principal yolo-placa.py implementa a lógica de detecção e reconhecimento de placas usando a webcam.
+## Análise Estatística
 
-## Trabalhos Futuros
+### Métricas Calculadas
+- Precisão por método e limiar
+- Distribuição de qualidade
+- Estatísticas de confiança YOLO
+- Análise de erro por caractere vs. placa completa
 
-- Expandir o dataset com mais placas brasileiras
-- Implementar detecção de adulterações em placas
-- Otimizar para dispositivos móveis
+### Exports Disponíveis
+- `detailed_results.csv`: Resultados completos por método/limiar
+- `accuracy_by_method.csv`: Métricas de precisão sumarizadas
+- `validation_summary.csv`: Resumo das validações manuais
+
+## Principais Descobertas
+
+### 1. Trade-off Crítico
+A escolha do pré-processamento é um **compromisso fundamental** entre precisão e eficiência computacional.
+
+### 2. Análise de Erros
+- Precisão por caractere (26.8%) é **8.5x maior** que precisão da placa completa (3.1%)
+- Erros em um único caractere causam falha total do reconhecimento
+- Necessidade de algoritmos de correção probabilística
+
+### 3. Requisito de Validação Adicional
+- Alta taxa de falsos positivos (96.9%)
+- Necessidade de mecanismos de validação (formato, banco de dados)
+
+## Próximos Passos
+
+1. **Análise Preditiva:** Implementar correspondência probabilística usando confiança por caractere
+2. **Expansão do Sistema:** Integração com bancos de dados nacionais
+3. **Testes em Campo:** Validação com forças policiais em condições reais
+4. **Dataset Aprimorado:** Cobertura de condições operacionais diversificadas
+
+## Contribuição Acadêmica
+
+Este projeto fornece:
+- Metodologia sistemática para avaliação de pré-processamento em LPR
+- Dataset validado de placas brasileiras
+- Análise quantitativa de trade-offs computacionais
+- Ferramentas reproduzíveis para pesquisa em OCR embarcado
 
 ## Licença
 
-Este projeto está licenciado sob a Licença MIT - veja o arquivo [LICENSE](LICENSE) para detalhes.
+MIT License - veja [LICENSE](LICENSE) para detalhes.
 
-## Agradecimentos
+## Citação
 
-- Professor Rigel pelo suporte e orientação
-- Colegas do curso
-- Comunidade YOLOv8 pelos excelentes recursos
-- Contribuidores dos projetos Tesseract
+```bibtex
+@misc{lpr_preprocessing_2025,
+  title={LPR em Tempo Real para Segurança Pública: Otimizando o Reconhecimento em Sistemas Embarcados},
+  author={André Costa and Marceu Filho and Michel Lutegar},
+  year={2025},
+  note={Disciplina: Sistemas Embarcados e IOT}
+}
+```
