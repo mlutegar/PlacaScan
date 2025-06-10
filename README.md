@@ -1,3 +1,5 @@
+https://www.canva.com/design/DAGp968ZEDE/Ysf2rYL_f00USe7ULTsD3w/edit?utm_content=DAGp968ZEDE&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton
+
 # LPR Analysis Tools: Otimização de Pré-processamento para OCR
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
