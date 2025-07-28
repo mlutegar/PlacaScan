@@ -263,13 +263,13 @@ class LicensePlateStatisticalAnalyzer:
         
         self.significance_results = results
         return results
-    
+
     def create_visualizations(self):
         """Create comprehensive visualizations"""
-        
+
         # Set up the plotting area
         fig = plt.figure(figsize=(20, 24))
-        
+
         # 1. Method comparison by accuracy
         plt.subplot(4, 3, 1)
         method_summary = self.threshold_df.groupby('preprocessing_method')['full_plate_accuracy'].mean().sort_values(ascending=False)
@@ -279,12 +279,12 @@ class LicensePlateStatisticalAnalyzer:
         plt.ylabel('Accuracy')
         plt.xticks(range(len(method_summary)), method_summary.index, rotation=45, ha='right')
         plt.ylim(0, 1)
-        
+
         # Add value labels on bars
         for bar, val in zip(bars, method_summary.values):
-            plt.text(bar.get_x() + bar.get_width()/2, bar.get_height() + 0.01, 
+            plt.text(bar.get_x() + bar.get_width()/2, bar.get_height() + 0.01,
                     f'{val:.3f}', ha='center', va='bottom', fontweight='bold')
-        
+
         # 2. Threshold impact comparison
         plt.subplot(4, 3, 2)
         threshold_comparison = self.threshold_df.groupby(['threshold_category'])['full_plate_accuracy'].mean()
@@ -292,77 +292,77 @@ class LicensePlateStatisticalAnalyzer:
         plt.title('Threshold vs No-Threshold Performance', fontsize=14, fontweight='bold')
         plt.ylabel('Full Plate Accuracy')
         plt.ylim(0, 1)
-        
+
         for bar, val in zip(bars, threshold_comparison.values):
-            plt.text(bar.get_x() + bar.get_width()/2, bar.get_height() + 0.01, 
+            plt.text(bar.get_x() + bar.get_width()/2, bar.get_height() + 0.01,
                     f'{val:.3f}', ha='center', va='bottom', fontweight='bold')
-        
+
         # 3. Character vs Full Plate Accuracy
         plt.subplot(4, 3, 3)
         char_vs_full = self.char_df.groupby('preprocessing_method')[['character_accuracy', 'full_plate_correct']].mean()
         x = np.arange(len(char_vs_full))
         width = 0.35
-        
+
         plt.bar(x - width/2, char_vs_full['character_accuracy'], width, label='Character Accuracy', alpha=0.8)
         plt.bar(x + width/2, char_vs_full['full_plate_correct'], width, label='Full Plate Accuracy', alpha=0.8)
-        
+
         plt.title('Character vs Full Plate Accuracy', fontsize=14, fontweight='bold')
         plt.xlabel('Preprocessing Method')
         plt.ylabel('Accuracy')
         plt.xticks(x, char_vs_full.index, rotation=45, ha='right')
         plt.legend()
         plt.ylim(0, 1)
-        
+
         # 4. Character position accuracy
         plt.subplot(4, 3, 4)
-        char_positions = ['char_0_correct', 'char_1_correct', 'char_2_correct', 
+        char_positions = ['char_0_correct', 'char_1_correct', 'char_2_correct',
                          'char_3_correct', 'char_4_correct', 'char_5_correct', 'char_6_correct']
-        
+
         position_accuracy = [self.char_df[pos].mean() for pos in char_positions if pos in self.char_df.columns]
         position_labels = ['Pos 0', 'Pos 1', 'Pos 2', 'Pos 3', 'Pos 4', 'Pos 5', 'Pos 6']
-        
+
         bars = plt.bar(range(len(position_accuracy)), position_accuracy, color='lightcoral')
         plt.title('Accuracy by Character Position', fontsize=14, fontweight='bold')
         plt.xlabel('Character Position')
         plt.ylabel('Accuracy')
         plt.xticks(range(len(position_accuracy)), position_labels[:len(position_accuracy)])
         plt.ylim(0, 1)
-        
+
         for bar, val in zip(bars, position_accuracy):
-            plt.text(bar.get_x() + bar.get_width()/2, bar.get_height() + 0.01, 
+            plt.text(bar.get_x() + bar.get_width()/2, bar.get_height() + 0.01,
                     f'{val:.2f}', ha='center', va='bottom', fontweight='bold')
-        
+
         # 5. False Positive Analysis
         plt.subplot(4, 3, 5)
         fp_summary = self.fp_df['prediction_type'].value_counts()
         colors = ['lightgreen', 'lightcoral', 'lightyellow', 'lightblue']
         plt.pie(fp_summary.values, labels=fp_summary.index, autopct='%1.1f%%', colors=colors[:len(fp_summary)])
         plt.title('Prediction Type Distribution', fontsize=14, fontweight='bold')
-        
+
         # 6. Confidence vs Accuracy scatter
         plt.subplot(4, 3, 6)
         plt.scatter(self.char_df['ocr_confidence'], self.char_df['character_accuracy'], alpha=0.6)
         plt.xlabel('OCR Confidence')
         plt.ylabel('Character Accuracy')
         plt.title('OCR Confidence vs Character Accuracy', fontsize=14, fontweight='bold')
-        
+
         # Add correlation
         correlation = np.corrcoef(self.char_df['ocr_confidence'], self.char_df['character_accuracy'])[0, 1]
-        plt.text(0.05, 0.95, f'Correlation: {correlation:.3f}', transform=plt.gca().transAxes, 
+        plt.text(0.05, 0.95, f'Correlation: {correlation:.3f}', transform=plt.gca().transAxes,
                 bbox=dict(boxstyle='round', facecolor='white', alpha=0.8))
-        
+
         # 7. Method performance heatmap
         plt.subplot(4, 3, 7)
-        heatmap_data = self.threshold_df.pivot_table(values='full_plate_accuracy', 
-                                                    index='preprocessing_method', 
-                                                    columns='confidence_threshold', 
+        heatmap_data = self.threshold_df.pivot_table(values='full_plate_accuracy',
+                                                    index='preprocessing_method',
+                                                    columns='confidence_threshold',
                                                     fill_value=0)
-        sns.heatmap(heatmap_data, annot=True, fmt='.3f', cmap='RdYlGn', 
+        sns.heatmap(heatmap_data, annot=True, fmt='.3f', cmap='RdYlGn',
                    cbar_kws={'label': 'Accuracy'})
         plt.title('Accuracy Heatmap: Method vs Threshold', fontsize=14, fontweight='bold')
         plt.xlabel('Confidence Threshold')
         plt.ylabel('Preprocessing Method')
-        
+
         # 8. Detection Rate vs Threshold
         plt.subplot(4, 3, 8)
         detection_by_threshold = self.threshold_df.groupby('confidence_threshold')['detection_rate'].mean()
@@ -372,71 +372,69 @@ class LicensePlateStatisticalAnalyzer:
         plt.ylabel('Detection Rate')
         plt.grid(True, alpha=0.3)
         plt.ylim(0, 1)
-        
+
         # 9. Quality vs Performance
         plt.subplot(4, 3, 9)
         quality_performance = self.char_df.groupby('quality')[['character_accuracy', 'full_plate_correct']].mean()
         x = np.arange(len(quality_performance))
         width = 0.35
-        
+
         plt.bar(x - width/2, quality_performance['character_accuracy'], width, label='Character Accuracy', alpha=0.8)
         plt.bar(x + width/2, quality_performance['full_plate_correct'], width, label='Full Plate Accuracy', alpha=0.8)
-        
+
         plt.title('Performance by Image Quality', fontsize=14, fontweight='bold')
         plt.xlabel('Image Quality')
         plt.ylabel('Accuracy')
         plt.xticks(x, quality_performance.index)
         plt.legend()
         plt.ylim(0, 1)
-        
+
         # 10. Character accuracy distribution
         plt.subplot(4, 3, 10)
         plt.hist(self.char_df['character_accuracy'], bins=20, alpha=0.7, color='skyblue', edgecolor='black')
-        plt.axvline(self.char_df['character_accuracy'].mean(), color='red', linestyle='--', linewidth=2, 
+        plt.axvline(self.char_df['character_accuracy'].mean(), color='red', linestyle='--', linewidth=2,
                    label=f'Mean: {self.char_df["character_accuracy"].mean():.3f}')
         plt.title('Character Accuracy Distribution', fontsize=14, fontweight='bold')
         plt.xlabel('Character Accuracy')
         plt.ylabel('Frequency')
         plt.legend()
-        
+
         # 11. Top performing combinations
         plt.subplot(4, 3, 11)
         top_combinations = self.threshold_df.nlargest(10, 'full_plate_accuracy')
-        combination_labels = [f"{row['preprocessing_method']}\n(T:{row['confidence_threshold']})" 
+        combination_labels = [f"{row['preprocessing_method']}\n(T:{row['confidence_threshold']})"
                             for _, row in top_combinations.iterrows()]
-        
+
         bars = plt.bar(range(len(top_combinations)), top_combinations['full_plate_accuracy'])
         plt.title('Top 10 Method-Threshold Combinations', fontsize=14, fontweight='bold')
         plt.xlabel('Method-Threshold Combination')
         plt.ylabel('Full Plate Accuracy')
         plt.xticks(range(len(top_combinations)), combination_labels, rotation=45, ha='right')
         plt.ylim(0, 1)
-        
+
         # 12. Statistical significance summary
         plt.subplot(4, 3, 12)
         plt.axis('off')
-        
+
         # Create text summary of statistical tests
         sig_text = "Statistical Significance Tests\n" + "="*30 + "\n\n"
-        
+
         if hasattr(self, 'significance_results'):
             for test_name, result in self.significance_results.items():
                 sig_text += f"{test_name.replace('_', ' ').title()}:\n"
                 sig_text += f"  Test: {result['test']}\n"
                 sig_text += f"  P-value: {result['p_value']:.4f}\n"
                 sig_text += f"  Significant: {'Yes' if result['significant'] else 'No'}\n\n"
-        
-        plt.text(0.1, 0.9, sig_text, transform=plt.gca().transAxes, fontsize=10, 
+
+        plt.text(0.1, 0.9, sig_text, transform=plt.gca().transAxes, fontsize=10,
                 verticalalignment='top', fontfamily='monospace',
                 bbox=dict(boxstyle='round', facecolor='lightgray', alpha=0.8))
-        
+
         plt.tight_layout()
-        
+
         # Save the plot
         plot_path = os.path.join(self.curated_dir, 'statistical_analysis.png')
         plt.savefig(plot_path, dpi=300, bbox_inches='tight')
-        plt.show()
-        
         print(f"Comprehensive analysis plot saved to: {plot_path}")
     
     def generate_academic_report(self):

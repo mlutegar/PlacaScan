@@ -1,6 +1,6 @@
 STATISTICAL ANALYSIS REPORT
 ==================================================
-Analysis Date: 2025-06-05 21:14
+Analysis Date: 2025-07-28 12:20
 Dataset: curated_dataset
 
 1. DATASET SUMMARY
@@ -72,18 +72,18 @@ Character Position:
 
 8. RECOMMENDATIONS FOR ACADEMIC PUBLICATION
 ------------------------------------------------
-â€¢ Best preprocessing method: Resized2x
-â€¢ Optimal confidence threshold: 0.8
-â€¢ Achieved accuracy: 0.667
-â€¢ Confidence thresholding improves performance
-â€¢ Character-level accuracy is 8.5x higher than full-plate accuracy
-â€¢ Focus on character position-specific improvements
+• Best preprocessing method: Resized2x
+• Optimal confidence threshold: 0.8
+• Achieved accuracy: 0.667
+• Confidence thresholding improves performance
+• Character-level accuracy is 8.5x higher than full-plate accuracy
+• Focus on character position-specific improvements
 
 9. KEY METRICS FOR PUBLICATION
 -----------------------------------
-â€¢ Dataset size: 65 unique license plates
-â€¢ Total experiments: 921 OCR tests
-â€¢ Method combinations tested: 40 (8 methods Ã— 5 thresholds)
-â€¢ Best accuracy achieved: 0.667
-â€¢ Average character accuracy: 0.268
-â€¢ Statistical significance: 2 of 3 tests significant
+• Dataset size: 65 unique license plates
+• Total experiments: 921 OCR tests
+• Method combinations tested: 40 (8 methods × 5 thresholds)
+• Best accuracy achieved: 0.667
+• Average character accuracy: 0.268
+• Statistical significance: 2 of 3 tests significant
