@@ -273,15 +273,17 @@ class LicensePlateStatisticalAnalyzer:
             os.makedirs(plots_dir)
 
         # 1. Method comparison by accuracy
-        plt.figure(figsize=(10, 6))
+        plt.figure(figsize=(6, 6))
+        plt.rcParams.update({'font.size': 10})
         method_summary = self.threshold_df.groupby('preprocessing_method')['full_plate_accuracy'].mean().sort_values(
             ascending=False)
         bars = plt.bar(range(len(method_summary)), method_summary.values)
         plt.title('Full Plate Accuracy by Preprocessing Method', fontsize=14, fontweight='bold')
         plt.xlabel('Preprocessing Method')
         plt.ylabel('Accuracy')
-        plt.xticks(range(len(method_summary)), method_summary.index, rotation=45, ha='right')
-        plt.ylim(0, 1)
+        plt.xticks(range(len(method_summary)), method_summary.index, rotation=90, ha='right')
+        max_val = method_summary.values.max()
+        plt.ylim(0, max_val * 1.2)  # 20% acima do valor máximo
 
         for bar, val in zip(bars, method_summary.values):
             plt.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + 0.01,
@@ -292,15 +294,17 @@ class LicensePlateStatisticalAnalyzer:
         plt.close()
 
         # 2. Threshold impact comparison
-        plt.figure(figsize=(8, 6))
+        plt.figure(figsize=(6, 6))
+        plt.rcParams.update({'font.size': 10})
         threshold_comparison = self.threshold_df.groupby(['threshold_category'])['full_plate_accuracy'].mean()
         bars = plt.bar(threshold_comparison.index, threshold_comparison.values, color=['skyblue', 'orange'])
         plt.title('Threshold vs No-Threshold Performance', fontsize=14, fontweight='bold')
         plt.ylabel('Full Plate Accuracy')
-        plt.ylim(0, 1)
+        max_val = threshold_comparison.values.max()
+        plt.ylim(0, max_val * 1.2)  # 20% acima do valor máximo
 
         for bar, val in zip(bars, threshold_comparison.values):
-            plt.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + 0.01,
+            plt.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + (max_val * 0.02),
                      f'{val:.3f}', ha='center', va='bottom', fontweight='bold')
 
         plt.tight_layout()
@@ -308,7 +312,8 @@ class LicensePlateStatisticalAnalyzer:
         plt.close()
 
         # 3. Character vs Full Plate Accuracy
-        plt.figure(figsize=(12, 6))
+        plt.figure(figsize=(6, 6))
+        plt.rcParams.update({'font.size': 10})
         char_vs_full = self.char_df.groupby('preprocessing_method')[['character_accuracy', 'full_plate_correct']].mean()
         x = np.arange(len(char_vs_full))
         width = 0.35
@@ -328,7 +333,8 @@ class LicensePlateStatisticalAnalyzer:
         plt.close()
 
         # 4. Character position accuracy
-        plt.figure(figsize=(10, 6))
+        plt.figure(figsize=(6, 6))
+        plt.rcParams.update({'font.size': 10})
         char_positions = ['char_0_correct', 'char_1_correct', 'char_2_correct',
                           'char_3_correct', 'char_4_correct', 'char_5_correct', 'char_6_correct']
 
@@ -351,7 +357,8 @@ class LicensePlateStatisticalAnalyzer:
         plt.close()
 
         # 5. False Positive Analysis
-        plt.figure(figsize=(8, 8))
+        plt.figure(figsize=(6, 6))
+        plt.rcParams.update({'font.size': 10})
         fp_summary = self.fp_df['prediction_type'].value_counts()
         colors = ['lightgreen', 'lightcoral', 'lightyellow', 'lightblue']
         plt.pie(fp_summary.values, labels=fp_summary.index, autopct='%1.1f%%', colors=colors[:len(fp_summary)])
@@ -362,7 +369,8 @@ class LicensePlateStatisticalAnalyzer:
         plt.close()
 
         # 6. Confidence vs Accuracy scatter
-        plt.figure(figsize=(10, 6))
+        plt.figure(figsize=(6, 6))
+        plt.rcParams.update({'font.size': 10})
         plt.scatter(self.char_df['ocr_confidence'], self.char_df['character_accuracy'], alpha=0.6)
         plt.xlabel('OCR Confidence')
         plt.ylabel('Character Accuracy')
@@ -377,7 +385,8 @@ class LicensePlateStatisticalAnalyzer:
         plt.close()
 
         # 7. Method performance heatmap
-        plt.figure(figsize=(12, 8))
+        plt.figure(figsize=(6, 6))
+        plt.rcParams.update({'font.size': 10})
         heatmap_data = self.threshold_df.pivot_table(values='full_plate_accuracy',
                                                      index='preprocessing_method',
                                                      columns='confidence_threshold',
@@ -393,7 +402,8 @@ class LicensePlateStatisticalAnalyzer:
         plt.close()
 
         # 8. Detection Rate vs Threshold
-        plt.figure(figsize=(10, 6))
+        plt.figure(figsize=(6, 6))
+        plt.rcParams.update({'font.size': 10})
         detection_by_threshold = self.threshold_df.groupby('confidence_threshold')['detection_rate'].mean()
         plt.plot(detection_by_threshold.index, detection_by_threshold.values, marker='o', linewidth=2, markersize=8)
         plt.title('Detection Rate vs Confidence Threshold', fontsize=14, fontweight='bold')
@@ -407,7 +417,8 @@ class LicensePlateStatisticalAnalyzer:
         plt.close()
 
         # 9. Quality vs Performance
-        plt.figure(figsize=(10, 6))
+        plt.figure(figsize=(6, 6))
+        plt.rcParams.update({'font.size': 10})
         quality_performance = self.char_df.groupby('quality')[['character_accuracy', 'full_plate_correct']].mean()
         x = np.arange(len(quality_performance))
         width = 0.35
@@ -427,7 +438,8 @@ class LicensePlateStatisticalAnalyzer:
         plt.close()
 
         # 10. Character accuracy distribution
-        plt.figure(figsize=(10, 6))
+        plt.figure(figsize=(6, 6))
+        plt.rcParams.update({'font.size': 10})
         plt.hist(self.char_df['character_accuracy'], bins=20, alpha=0.7, color='skyblue', edgecolor='black')
         plt.axvline(self.char_df['character_accuracy'].mean(), color='red', linestyle='--', linewidth=2,
                     label=f'Mean: {self.char_df["character_accuracy"].mean():.3f}')
@@ -441,7 +453,8 @@ class LicensePlateStatisticalAnalyzer:
         plt.close()
 
         # 11. Top performing combinations
-        plt.figure(figsize=(12, 6))
+        plt.figure(figsize=(6, 6))
+        plt.rcParams.update({'font.size': 10})
         top_combinations = self.threshold_df.nlargest(10, 'full_plate_accuracy')
         combination_labels = [f"{row['preprocessing_method']}\n(T:{row['confidence_threshold']})"
                               for _, row in top_combinations.iterrows()]
@@ -451,14 +464,16 @@ class LicensePlateStatisticalAnalyzer:
         plt.xlabel('Method-Threshold Combination')
         plt.ylabel('Full Plate Accuracy')
         plt.xticks(range(len(top_combinations)), combination_labels, rotation=45, ha='right')
-        plt.ylim(0, 1)
+        max_val = top_combinations['full_plate_accuracy'].max()
+        plt.ylim(0, max_val * 1.2)
 
         plt.tight_layout()
         plt.savefig(os.path.join(plots_dir, '11_top_combinations.png'), dpi=300, bbox_inches='tight')
         plt.close()
 
         # 12. Statistical significance summary
-        plt.figure(figsize=(10, 8))
+        plt.figure(figsize=(6, 6))
+        plt.rcParams.update({'font.size': 10})
         plt.axis('off')
 
         sig_text = "Statistical Significance Tests\n" + "=" * 30 + "\n\n"
